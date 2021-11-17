@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .monaco-editor.showUnused .squiggly-inline-unnecessary {
+      opacity: 1 !important;
+    }
+    #container, html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
+  <script>
+  let code = `
+function increase (x, amount = 1) {
+  return x + amount;
+}
+
+// Using default values tells devtool that some arguments is optional
+function decrease (x, amount = undefined) {
+  return x - (amount ?? 1) // Nullish coalescing operator
+}
+
+/** @param {string} [message]    The thing you want to say */
+function say (message) {
+  if (message) alert(message)
+}
+
+/** @param {string=} message    The thing you want to say */
+function say (message) {
+  if (message) alert(message)
+}
+`;
+
+  require.config({
+    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs" }
+  });
+  require(["vs/editor/editor.main"], function () {
+    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true)
+    var lang = 'typescript';
+    var model = new monaco.editor.createModel(code, lang, monaco.Uri.from({path: "index.js"}))
+
+    var tsOp = monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
+    tsOp.allowJs = true;
+    tsOp.checkJs = true;
+    tsOp.strict = false;
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions(tsOp);
+
+    window.editor = monaco.editor.create(container, {
+      value: code,
+      model: model,
+      theme: 'vs-dark',
+      lineNumbers: 'off',
+      wordWrap: 'on',
+      minimap: {
+        enabled: false
+      },
+      language: "javascript"
+    })
+  })
+  </script>
+</body>
+</html>

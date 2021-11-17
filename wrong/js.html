@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .monaco-editor.showUnused .squiggly-inline-unnecessary {
+      opacity: 1 !important;
+    }
+    #container, html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
+  <script>
+  let code = `
+new ArrayBuffer()     // Totally okay to omit length for 0-length
+
+fetch(new URL('/'))   // Fallback behavior is to cast to string
+
+new Date() + 1000     // Ok to use + operator, it has Symbol.toPrimitive
+
+new Blob([{}]).text() // Fallback behavior is to cast to string
+
+alert('', extraArg)   // It don't hurts to do byte saving tech
+
+1 + true              // Because you can
+
+'abc'.replaceAll('a', 'A') // Don't need to specify target
+
+import('https://example.com/foo.js') // Not a problem
+
+await Promise.resolve(
+  "Unaware if it's a module with top-level await support or not"
+)
+
+window.addEventListener('message', () => {}, {
+  once: true,
+  // Dose not complain of unknown properties in new spec
+  signal: new AbortController().signal
+})
+
+class A {}
+class B extends A {
+  x = ''
+  constructor (x, y, z) {
+    if (arguments.length < 3) throw new TypeError('Meh')
+    super()
+  }
+}
+`;
+
+  require.config({
+    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs" }
+  });
+  require(["vs/editor/editor.main"], function () {
+    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true)
+    var lang = 'typescript';
+    var model = new monaco.editor.createModel(code, lang, monaco.Uri.from({path: "index.js"}))
+
+    var tsOp = monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
+    tsOp.allowJs = true;
+    tsOp.checkJs = false;
+    tsOp.strict = false;
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions(tsOp);
+
+    window.editor = monaco.editor.create(container, {
+      value: code,
+      model: model,
+      theme: 'vs-dark',
+      lineNumbers: 'off',
+      wordWrap: 'on',
+      minimap: {
+        enabled: false
+      },
+      language: "javascript"
+    })
+  })
+  </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .monaco-editor.showUnused .squiggly-inline-unnecessary {
+      opacity: 1 !important;
+    }
+    #container, html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
+  <script>
+  let code = `
+// settings.json
+
+{
+  // The 3 most important one:
+  // Enable semantic checking of JavaScript files.
+  // Existing jsconfig.json or tsconfig.json files override this setting.
+  "js/ts.implicitProjectConfig.checkJs": true,
+  // Enable suggestion to complete JSDoc comments.
+  "javascript.suggest.completeJSDocs": true,
+  // Preferred path ending with extension (good for ESM & cjs).
+  "javascript.preferences.importModuleSpecifierEnding": "js",
+
+  // Other suggestions useful stuff:
+  // Complete functions with their parameter signature.
+  "javascript.suggest.completeFunctionCalls": true,
+  // Enable auto import suggestions.
+  "javascript.suggest.autoImports": true
+}
+`;
+
+  require.config({
+    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs" }
+  });
+  require(["vs/editor/editor.main"], function () {
+    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true)
+    var lang = 'json';
+    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      allowComments: true,
+      schemaValidation: 'error'
+    });
+    var model = new monaco.editor.createModel(code, lang, monaco.Uri.from({path: "index.js"}))
+
+    window.editor = monaco.editor.create(container, {
+      value: code,
+      model: model,
+      theme: 'vs-dark',
+      lineNumbers: 'off',
+      wordWrap: 'on',
+      minimap: {
+        enabled: false
+      },
+      language: "json"
+    })
+  })
+  </script>
+</body>
+</html>

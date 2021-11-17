@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .monaco-editor.showUnused .squiggly-inline-unnecessary {
+      opacity: 1 !important;
+    }
+    #container, html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+    .decorationsOverviewRuler {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
+  <script>
+  let code = `
+new ArrayBuffer() // Expected 1 arguments, but got 0.
+
+fetch(new URL('/')) // Argument is not of type \`RequestInfo\`
+
+new Date() + 1000 // Operator '+' cannot be applied to other types
+
+new Blob([{}]).text() // is not assignable to type 'BlobPart'.
+
+alert('', extraArg) // Expected 0-1 arguments, but got 2.
+
+1 + true // Operator '+' cannot be applied to other types
+
+'abc'.replaceAll('a', 'A') // 'replaceAll' does not exist on string
+
+import('https://example.com/foo.js') // Error: Cannot find module
+
+await Promise.resolve(
+  "Unaware if it's a module with top-level await support or not"
+)
+
+window.addEventListener('message', () => {}, {
+  once: true,
+  // Don't support new unknown features
+  signal: new AbortController().signal
+})
+
+class A {}
+class B extends A {
+  x = ''
+  constructor (x, y, z) {
+    if (arguments.length < 3) throw new TypeError('Meh')
+    super() // A 'super' call must be the first statement...
+  }
+}
+`;
+
+
+  require.config({
+    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.24.0/min/vs" }
+  });
+  require(["vs/editor/editor.main"], function () {
+
+    var tsOp = monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
+    tsOp.strict = false
+    tsOp.target = 'es6'
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions(tsOp);
+
+    window.editor = monaco.editor.create(container, {
+      value: code,
+      theme: 'vs-dark',
+      lineNumbers: 'off',
+      wordWrap: 'on',
+      minimap: {
+        enabled: false
+      },
+      language: "typescript"
+    })
+  })
+  </script>
+</body>
+</html>

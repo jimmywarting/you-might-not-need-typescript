@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .monaco-editor.showUnused .squiggly-inline-unnecessary {
+      opacity: 1 !important;
+    }
+    #container, html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+    .decorationsOverviewRuler {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
+  <script>
+  let code = `
+interface DestructuredUser {
+  userName: string,
+  age: number
+}
+
+
+/** @type {DestructuredUser} */
+const { userName, age } = getUser()
+
+/**
+ * For annotating on a function argument:
+ *
+ * Notice how this requires you to write the same properties
+ * twice to get the same function signature, so it's more verbose
+ *
+ * This signature dose not mean the same thing:
+ * logUser({userName: string, age: number}) { ... }
+ */
+function logUser ({userName, age}: {userName: string, age: number}){
+  // ...
+}
+
+/**
+ * ... Or with a separate interface
+ *
+ */
+function saveUser ({ userName, age }: DestructuredUser) {
+  // ...
+}
+
+/**
+ * You can even annotate on arrow functions:
+ */
+const printReceipt = (obj?: {
+  total: number;
+  vendorName?: string | undefined;
+}) => {
+  // total and vendorName will have correct types!
+}
+
+printReceipt({
+	total: 200,     // no explination...
+	vendorName: ''  // no explination...
+})
+
+function getUser() {
+  return {
+  	userName: '',
+	  age: 20
+  }
+}
+`
+  require.config({
+    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs" }
+  });
+  require(["vs/editor/editor.main"], function () {
+
+    window.editor = monaco.editor.create(container, {
+      value: code,
+      theme: 'vs-dark',
+      lineNumbers: 'on',
+      wordWrap: 'on',
+      minimap: {
+        enabled: false
+      },
+      language: "typescript"
+    })
+  })
+  </script>
+</body>
+</html>

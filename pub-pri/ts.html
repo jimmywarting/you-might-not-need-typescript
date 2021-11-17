@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .monaco-editor.showUnused .squiggly-inline-unnecessary {
+      opacity: 1 !important;
+    }
+    #container, html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+    .decorationsOverviewRuler {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
+  <script>
+  let code = `
+class Employee {
+  private name = ''
+  public alive = true
+
+  public constructor (theName: string = 'bob') {
+    this.name = theName
+  }
+
+  public getName(): string {
+    return this.name
+  }
+}
+
+const employee = new Employee('Bob')
+employee.name // Property 'name' is private and only accessible ...'.
+employee.     // ctrl + space to autocomplete to see all properties
+`;
+
+
+  require.config({
+    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs" }
+  });
+  require(["vs/editor/editor.main"], function () {
+    window.editor = monaco.editor.create(container, {
+      value: code,
+      theme: 'vs-dark',
+      lineNumbers: 'off',
+      wordWrap: 'on',
+      minimap: {
+        enabled: false
+      },
+      language: "typescript"
+    })
+  })
+  </script>
+</body>
+</html>

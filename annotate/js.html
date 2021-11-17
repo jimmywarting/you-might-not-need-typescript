@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .monaco-editor.showUnused .squiggly-inline-unnecessary {
+      opacity: 1 !important;
+    }
+    #container, html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
+  <script>
+  let code = `
+/**
+ * @typedef {object} DestructuredUser
+ * @property {string} userName
+ * @property {number} age
+ */
+
+/** @type {DestructuredUser} */
+const { userName, age } = getUser()
+
+/**
+ * For annotating on a function argument:
+ *
+ * @param {{ userName: string, age: number }} obj
+ */
+function logUser ({ userName, age }) {
+	// ...
+}
+
+
+
+
+
+/**
+ * ... Or with a separate typedef
+ * @param {DestructuredUser} param
+ */
+function saveUser ({ userName, age }) {
+  // ...
+}
+
+/**
+ * You can even annotate on arrow functions:
+ * @param {object} [obj] - Everything that has [] is optional
+ * @param {number} obj.total - Total price sum
+ * @param {string=} obj.vendorName - Everything with {*=} is optional
+ */
+const printReceipt = ({ total, vendorName }) => {
+  // total and vendorName will have correct types!
+}
+
+printReceipt({
+	total: 200,    // with Intellisense this also explains
+	vendorName: '' // the property what they mean at the same time
+})
+
+function getUser() {
+  return {
+	userName: '',
+	age: 20
+  }
+}
+
+`;
+
+  require.config({
+    paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs" }
+  });
+  require(["vs/editor/editor.main"], function () {
+    monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true)
+    var lang = 'typescript';
+    var model = new monaco.editor.createModel(code, lang, monaco.Uri.from({path: "index.js"}))
+
+    var tsOp = monaco.languages.typescript.typescriptDefaults['getCompilerOptions']();
+    tsOp.allowJs = true;
+    tsOp.checkJs = true;
+    tsOp.strict = true;
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions(tsOp);
+
+    window.editor = monaco.editor.create(container, {
+      value: code,
+      model: model,
+      theme: 'vs-dark',
+      lineNumbers: 'on',
+      wordWrap: 'on',
+      minimap: {
+        enabled: false
+      },
+      language: "javascript"
+    })
+  })
+  </script>
+</body>
+</html>
