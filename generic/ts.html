@@ -31,11 +31,10 @@
 /**
  * Takes any object with a name prop and removes it
  */
-const deleteName = <T>(obj: T&{ name?: string; }): Omit<T,'name'> => {
-
-	const copy = JSON.parse(JSON.stringify(obj))
-	delete copy.name
-	return copy
+function deleteName <T extends { name?: string }>(obj: T): Omit<T, 'name'> {
+  const copy = JSON.parse(JSON.stringify(obj))
+  delete copy.name
+  return copy
 }
 
 // IDE will automatically infer type of T, and also infer the
