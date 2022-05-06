@@ -22,6 +22,8 @@
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
   <script>
   let code = `
+new (async ()=>{}).constructor('return "works"')().then(console.log)
+
 new ArrayBuffer()     // Totally okay to omit length for 0-length
 
 fetch(new URL('/'))   // Fallback behavior is to cast to string
