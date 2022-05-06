@@ -25,6 +25,8 @@
   <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.27.0/min/vs/loader.js"></script>
   <script>
   let code = `
+new (async ()=>{}).constructor('return "works"')().then(console.log)
+
 new ArrayBuffer() // Expected 1 arguments, but got 0.
 
 fetch(new URL('/')) // Argument is not of type \`RequestInfo\`
