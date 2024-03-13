@@ -436,6 +436,7 @@ iframe {
   list-style: none;
   display: block;
   position: relative;
+  overflow: hidden;
 }
 .quote-slider li {
   display: inline-block;
